@@ -65,3 +65,16 @@ func GetImgMat(arr [][][]uint8) gocv.Mat {
 	return gocv.NewMatFromBytes(height, width, flag[channels-1], flatArr)
 
 }
+
+// GetHistArray - Get histrogram array
+func GetHistArray(img gocv.Mat) []int {
+	hist := make([]int, 256)
+
+	flatArr := img.ToBytes()
+
+	for i := range flatArr {
+		hist[flatArr[i]]++
+	}
+
+	return hist
+}
