@@ -9,7 +9,7 @@ import (
 const imgPath = "image_c.jpg"
 
 func main() {
-	img := gocv.IMRead(imgPath, gocv.IMReadGrayScale)
+	img := gocv.IMRead(imgPath, gocv.IMReadColor)
 
 	height := img.Rows()
 	width := img.Cols()
@@ -20,15 +20,8 @@ func main() {
 	arr := GetImgArray(img)
 	fmt.Printf("%v x %v x %v", len(arr), len(arr[0]), len(arr[0][0]))
 
-	for r := 0; r < height; r++ {
-		for c := 0; c < width; c++ {
-			fmt.Printf("%v\n", arr[r][c])
+	newImg := GetImgMat(arr)
+	fmt.Printf("new: %v x %v (%v)\n", newImg.Rows(), newImg.Cols(), newImg.Channels())
 
-		}
-	}
-
-	fmt.Printf("%#v\n", img.Mean())
-
-	// Show(img)
-
+	gocv.IMWrite("out.jpg", newImg)
 }

@@ -42,3 +42,26 @@ func GetImgArray(img gocv.Mat) [][][]uint8 {
 
 	return arr
 }
+
+// GetImgMat - Convert cvMat to 3-dimension array
+func GetImgMat(arr [][][]uint8) gocv.Mat {
+	flag := [...]gocv.MatType{gocv.MatTypeCV8UC1, gocv.MatTypeCV8UC2, gocv.MatTypeCV8UC3, gocv.MatTypeCV8UC4}
+	height := len(arr)
+	width := len(arr[0])
+	channels := len(arr[0][0])
+	i := 0
+
+	flatArr := make([]byte, height*width*channels)
+
+	for row := 0; row < height; row++ {
+		for col := 0; col < width; col++ {
+			for ch := 0; ch < channels; ch++ {
+				flatArr[i] = arr[row][col][ch]
+				i++
+			}
+		}
+	}
+
+	return gocv.NewMatFromBytes(height, width, flag[channels-1], flatArr)
+
+}
