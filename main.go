@@ -1,17 +1,15 @@
 package main
 
 import (
-	"fmt"
-
 	"gocv.io/x/gocv"
 )
 
-const imgPath = "image_c.jpg"
+const imgPath = "image.jpg"
 
 func main() {
 	img := gocv.IMRead(imgPath, gocv.IMReadGrayScale)
 
-	hist := GetHistArray(img)
+	newImg := AutoThreshold(img)
 
-	fmt.Printf("%v", hist)
+	Show(newImg)
 }
