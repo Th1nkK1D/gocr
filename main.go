@@ -4,7 +4,7 @@ import (
 	"gocv.io/x/gocv"
 )
 
-const imgPath = "image.jpg"
+const imgPath = "image3.jpg"
 
 func main() {
 	img := gocv.IMRead(imgPath, gocv.IMReadGrayScale)
@@ -12,4 +12,11 @@ func main() {
 	newImg := AutoThreshold(img)
 
 	Show(newImg)
+
+	imgArr := GetImgArray(newImg)
+	start, end := SplitLine(imgArr)
+
+	for i := range start {
+		Show(GetImgMat(imgArr[start[i]:end[i]]))
+	}
 }
