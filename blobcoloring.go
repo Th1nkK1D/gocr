@@ -1,29 +1,25 @@
 package main
 
 import (
-	"fmt"
+	"image"
 	"sort"
 )
 
-type rect struct {
-	yMin, xMin, yMax, xMax int
-}
-
-func updateRect(old, new rect) rect {
-	if new.xMax > old.xMax {
-		old.xMax = new.xMax
+func updateRect(old, new image.Rectangle) image.Rectangle {
+	if new.Max.X > old.Max.X {
+		old.Max.X = new.Max.X
 	}
 
-	if new.xMin < old.xMin {
-		old.xMin = new.xMin
+	if new.Min.X < old.Min.X {
+		old.Min.X = new.Min.X
 	}
 
-	if new.yMax > old.yMax {
-		old.yMax = new.yMax
+	if new.Max.Y > old.Max.Y {
+		old.Max.Y = new.Max.Y
 	}
 
-	if new.yMin < old.yMin {
-		old.yMin = new.yMin
+	if new.Min.Y < old.Min.Y {
+		old.Min.Y = new.Min.Y
 	}
 
 	return old
@@ -37,11 +33,11 @@ func getMapRoot(maptable map[int]int, val int) int {
 	return val
 }
 
-// SegmentChar - Segment characters
-func SegmentChar(imgArr [][][]uint8) {
+// GetSegmentChar - Segment characters
+func GetSegmentChar(imgArr [][][]uint8) []image.Rectangle {
 	grass := make([][]int, len(imgArr))
 	maptable := make(map[int]int)
-	recttable := make(map[int]rect)
+	recttable := make(map[int]image.Rectangle)
 	num := 0
 
 	// Init grass
@@ -82,24 +78,20 @@ func SegmentChar(imgArr [][][]uint8) {
 					num++
 					grass[y][x] = num
 					maptable[num] = num
-					recttable[num] = rect{y, x, y, x}
-					// fmt.Printf("Add %v: %v\n", num, recttable[num])
-
+					recttable[num] = image.Rectangle{image.Point{x, y}, image.Point{x, y}}
 				} else {
 					// Same object
 					sort.Ints(found)
 
 					rootNode := getMapRoot(maptable, found[0])
 					grass[y][x] = rootNode
-					recttable[rootNode] = updateRect(recttable[rootNode], rect{y, x, y, x})
+					recttable[rootNode] = updateRect(recttable[rootNode], image.Rectangle{image.Point{x, y}, image.Point{x, y}})
 
 					// Update maptable and recttable
 					for k := 1; k < len(found); k++ {
 						if newRect, ok := recttable[found[k]]; ok && found[k] != rootNode {
 							maptable[found[k]] = rootNode
-							// fmt.Printf("Update %v: %v <-> %v: %v ", rootNode, recttable[rootNode], found[k], newRect)
 							recttable[rootNode] = updateRect(recttable[rootNode], newRect)
-							// fmt.Printf("--> %v \n", recttable[rootNode])
 							delete(recttable, found[k])
 						}
 					}
@@ -108,7 +100,14 @@ func SegmentChar(imgArr [][][]uint8) {
 		}
 	}
 
-	// fmt.Printf("%v\n", grass)
-	fmt.Printf("%v\n", maptable)
-	fmt.Printf("%v\n", recttable)
+	// Map to array
+	rectArray := make([]image.Rectangle, 0)
+
+	for _, r := range recttable {
+		rectArray = append(rectArray, r)
+	}
+
+	sort.Slice(rectArray, func(i, j int) bool { return rectArray[i].Min.X < rectArray[j].Min.X })
+
+	return rectArray
 }
