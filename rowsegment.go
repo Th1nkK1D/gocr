@@ -1,5 +1,10 @@
 package main
 
+import (
+	"fmt"
+	"sort"
+)
+
 const cutoffTh = 2
 const countTh = 2
 
@@ -30,8 +35,12 @@ func SplitLine(arr [][][]uint8) ([]int, []int) {
 		if freq[r] >= countTh {
 			// Spot black
 			if wCount > 0 {
+				// fmt.Printf("b -> %v\n", )
+				if wCount >= cutoffTh {
+					startMark = append(startMark, r-cutoffTh)
+				}
+
 				wCount = 0
-				startMark = append(startMark, r)
 			}
 
 			bCount++
@@ -39,13 +48,31 @@ func SplitLine(arr [][][]uint8) ([]int, []int) {
 		} else {
 			// Spot white
 			if bCount > 0 {
+				if bCount >= cutoffTh {
+					endMark = append(endMark, r)
+				}
+
 				bCount = 0
-				endMark = append(endMark, r)
 			}
 
 			wCount++
 		}
 	}
+
+	fmt.Printf("%v\n", startMark)
+	fmt.Printf("%v\n", endMark)
+
+	rangeArr := make([]int, len(startMark))
+
+	for i := range startMark {
+		rangeArr[i] = endMark[i] - startMark[i]
+	}
+
+	fmt.Printf("value: %v\n", rangeArr)
+
+	sort.Ints(rangeArr)
+
+	fmt.Printf("value: %v\n", rangeArr)
 
 	return startMark, endMark
 }

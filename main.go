@@ -4,7 +4,7 @@ import (
 	"gocv.io/x/gocv"
 )
 
-const imgPath = "image3.jpg"
+const imgPath = "image3.png"
 
 func main() {
 	img := gocv.IMRead(imgPath, gocv.IMReadGrayScale)
