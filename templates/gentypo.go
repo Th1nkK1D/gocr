@@ -9,6 +9,7 @@ import (
 	"image/png"
 	"io/ioutil"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -18,6 +19,33 @@ import (
 const templateChar = "ส ก น ด"
 const fontFile = "angsanaNew.ttf"
 const fontSize = 20
+
+func getGlypBound(img image.Image) image.Rectangle {
+	white := color.RGBA{255, 255, 255, 255}
+	imgBound := img.Bounds()
+	// typoBound := image.Rectangle{image.Point{0, 0}, image.Point{imgBound.Max.X, imgBound.Max.Y}}
+	yRange := make([]int, 0)
+	xRange := make([]int, 0)
+
+	// fmt.Println(typoBound)
+
+	for y := 0; y < imgBound.Max.Y; y++ {
+		for x := 0; x < imgBound.Max.X; x++ {
+			if img.At(x, y) != white {
+				yRange = append(yRange, y)
+				xRange = append(xRange, x)
+			}
+		}
+	}
+
+	sort.Ints(yRange)
+	sort.Ints(xRange)
+
+	// fmt.Println(yRange)
+	// fmt.Println(xRange)
+
+	return image.Rectangle{image.Point{xRange[0], yRange[0]}, image.Point{xRange[len(xRange)-1], yRange[len(yRange)-1]}}
+}
 
 func main() {
 	fontBytes, err := ioutil.ReadFile(fontFile)
@@ -52,10 +80,13 @@ func main() {
 		pt := freetype.Pt(fontSize/2, fontSize)
 
 		_, err := ctx.DrawString(str, pt)
+
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
+
+		getGlypBound(background)
 
 		count++
 
