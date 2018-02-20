@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"image"
 	"image/color"
 	"image/draw"
@@ -18,16 +17,13 @@ import (
 
 const templateChar = "ส ก น ด"
 const fontFile = "angsanaNew.ttf"
-const fontSize = 20
+const fontSize = 40
 
 func getGlypBound(img image.Image) image.Rectangle {
 	white := color.RGBA{255, 255, 255, 255}
 	imgBound := img.Bounds()
-	// typoBound := image.Rectangle{image.Point{0, 0}, image.Point{imgBound.Max.X, imgBound.Max.Y}}
 	yRange := make([]int, 0)
 	xRange := make([]int, 0)
-
-	// fmt.Println(typoBound)
 
 	for y := 0; y < imgBound.Max.Y; y++ {
 		for x := 0; x < imgBound.Max.X; x++ {
@@ -40,9 +36,6 @@ func getGlypBound(img image.Image) image.Rectangle {
 
 	sort.Ints(yRange)
 	sort.Ints(xRange)
-
-	// fmt.Println(yRange)
-	// fmt.Println(xRange)
 
 	return image.Rectangle{image.Point{xRange[0], yRange[0]}, image.Point{xRange[len(xRange)-1], yRange[len(yRange)-1]}}
 }
@@ -77,39 +70,31 @@ func main() {
 		ctx.SetSrc(image.NewUniform(color.RGBA{0, 0, 0, 255}))
 
 		// Draw the text to the background
-		pt := freetype.Pt(fontSize/2, fontSize)
-
-		_, err := ctx.DrawString(str, pt)
+		_, err := ctx.DrawString(str, freetype.Pt(fontSize/2, fontSize))
 
 		if err != nil {
-			fmt.Println(err)
-			return
+			panic(err)
 		}
-
-		getGlypBound(background)
 
 		count++
 
 		// Save
 		outFile, err := os.Create(strconv.Itoa(count) + ".png")
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(-1)
+			panic(err)
 		}
 
 		buff := bufio.NewWriter(outFile)
 
-		err = png.Encode(buff, background)
+		err = png.Encode(buff, background.SubImage(getGlypBound(background)))
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(-1)
+			panic(err)
 		}
 
 		// flush everything out to file
 		err = buff.Flush()
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(-1)
+			panic(err)
 		}
 
 		outFile.Close()
