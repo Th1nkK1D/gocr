@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"image"
 	"image/color"
 	"image/draw"
@@ -13,19 +12,20 @@ import (
 	"strconv"
 	"strings"
 
+	"gocv.io/x/gocv"
+
 	"github.com/golang/freetype"
 	"github.com/golang/freetype/truetype"
 )
 
-const templateChar = "ฟ ห ก ด เ ้ ่ า ส ว ง ๆ ไ พ ั ี ร น ย บ ล"
-const fontFile = "angsanaNew.ttf"
+const fontFile = "templates/angsanaNew.ttf"
 const fontSize = 40
 const binSize = 0.8
 const binNum = 5
 
 type template struct {
 	char string
-	src  string
+	mat  gocv.Mat
 	bin  int
 }
 
@@ -47,7 +47,7 @@ func getGlypBound(img image.Image) image.Rectangle {
 	sort.Ints(yRange)
 	sort.Ints(xRange)
 
-	return image.Rectangle{image.Point{xRange[0], yRange[0]}, image.Point{xRange[len(xRange)-1], yRange[len(yRange)-1]}}
+	return image.Rectangle{image.Point{xRange[0], yRange[0]}, image.Point{xRange[len(xRange)-1] + 1, yRange[len(yRange)-1] + 1}}
 }
 
 func getBinNum(ratio float32) int {
@@ -55,7 +55,7 @@ func getBinNum(ratio float32) int {
 }
 
 // Write character to the file
-func writeGlyp(str string, count int, font *truetype.Font) template {
+func writeGlyp(str string, count int, font *truetype.Font) {
 	background := image.NewRGBA(image.Rect(0, 0, fontSize*3/2, fontSize*3/2))
 
 	draw.Draw(background, background.Bounds(), image.NewUniform(color.RGBA{255, 255, 255, 255}), image.ZP, draw.Src)
@@ -82,7 +82,7 @@ func writeGlyp(str string, count int, font *truetype.Font) template {
 	glypBound := getGlypBound(background)
 
 	// Save
-	outFile, err := os.Create(filename)
+	outFile, err := os.Create(templateDir + filename)
 	if err != nil {
 		panic(err)
 	}
@@ -101,11 +101,10 @@ func writeGlyp(str string, count int, font *truetype.Font) template {
 	}
 
 	outFile.Close()
-
-	return template{str, filename, getBinNum(float32(glypBound.Max.Y-glypBound.Min.Y) / float32(glypBound.Max.X-glypBound.Min.X))}
 }
 
-func main() {
+// GenTemplate - Generate Template file
+func GenTemplate(templateChar, templateDir string) {
 	fontBytes, err := ioutil.ReadFile(fontFile)
 
 	if err != nil {
@@ -119,15 +118,10 @@ func main() {
 	}
 
 	count := 0
-	glypIndex := make([][]template, binNum)
 
 	// Each glyps
 	for _, str := range strings.Split(templateChar, " ") {
-		temp := writeGlyp(str, count, font)
-		glypIndex[temp.bin] = append(glypIndex[temp.bin], temp)
-
+		writeGlyp(str, count, font)
 		count++
 	}
-
-	fmt.Println(glypIndex)
 }

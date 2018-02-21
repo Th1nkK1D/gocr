@@ -2,34 +2,46 @@ package main
 
 import (
 	"image/color"
+	"os"
 
 	"gocv.io/x/gocv"
 )
 
 const imgPath = "image3.png"
 
+const templateChar = "ฟ ห ก ด เ ้ ่ า ส ว ง ๆ ไ พ ั ี ร น ย บ ล"
+const templateDir = "templates/"
+
 func main() {
-	img := gocv.IMRead(imgPath, gocv.IMReadGrayScale)
+	if os.Args[1] == "--gentemp" {
+		// Generate template
+		GenTemplate(templateChar, templateDir)
+	} else {
+		// OCR
 
-	newImg := AutoThreshold(img)
+		img := gocv.IMRead(imgPath, gocv.IMReadGrayScale)
 
-	// Show(newImg)
+		newImg := AutoThreshold(img)
 
-	imgArr := GetImgArray(newImg)
+		// Show(newImg)
 
-	// start, end := SplitLine(imgArr)
+		imgArr := GetImgArray(newImg)
 
-	// for i := range start {
-	// 	Show(GetImgMat(imgArr[start[i]:end[i]]))
-	// }
+		// start, end := SplitLine(imgArr)
 
-	rectTable := GetSegmentChar(imgArr)
+		// for i := range start {
+		// 	Show(GetImgMat(imgArr[start[i]:end[i]]))
+		// }
 
-	// fmt.Printf("%v\n", rectTable)
+		rectTable := GetSegmentChar(imgArr)
 
-	for i := range rectTable {
-		gocv.Rectangle(newImg, rectTable[i], color.RGBA{255, 0, 0, 0}, 1)
+		// fmt.Printf("%v\n", rectTable)
+
+		for i := range rectTable {
+			gocv.Rectangle(newImg, rectTable[i], color.RGBA{255, 0, 0, 0}, 1)
+		}
+
+		// gocv.IMWrite("out.jpg", newImg)
+
 	}
-
-	gocv.IMWrite("out.jpg", newImg)
 }
