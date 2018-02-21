@@ -12,22 +12,12 @@ import (
 	"strconv"
 	"strings"
 
-	"gocv.io/x/gocv"
-
 	"github.com/golang/freetype"
 	"github.com/golang/freetype/truetype"
 )
 
 const fontFile = "templates/angsanaNew.ttf"
 const fontSize = 40
-const binSize = 0.8
-const binNum = 5
-
-type template struct {
-	char string
-	mat  gocv.Mat
-	bin  int
-}
 
 func getGlypBound(img image.Image) image.Rectangle {
 	white := color.RGBA{255, 255, 255, 255}
@@ -48,10 +38,6 @@ func getGlypBound(img image.Image) image.Rectangle {
 	sort.Ints(xRange)
 
 	return image.Rectangle{image.Point{xRange[0], yRange[0]}, image.Point{xRange[len(xRange)-1] + 1, yRange[len(yRange)-1] + 1}}
-}
-
-func getBinNum(ratio float32) int {
-	return int(ratio / binSize)
 }
 
 // Write character to the file
