@@ -13,6 +13,7 @@ import (
 
 const templateDir = "templates/"
 const outputDir = "outputs/"
+const mfSize = 3
 
 func check(err error) {
 	if err != nil {
@@ -50,9 +51,17 @@ func main() {
 				// Apply auto threshold
 				fmt.Println("Applying auto threshold...")
 
-				newImg := AutoThreshold(img)
+				img = AutoThreshold(img)
 
-				gocv.IMWrite(outputDir+"02_auto_threshold.jpg", newImg)
+				gocv.IMWrite(outputDir+"01_auto_threshold.jpg", img)
+
+				// Apply median filter
+				fmt.Println("Applying median filter...")
+
+				imgArr := MedianFilter(GetImgArray(img), (mfSize-1)/2)
+				img = GetImgMat(imgArr)
+
+				gocv.IMWrite(outputDir+"02_median_filter.jpg", img)
 
 				// Read template
 				fmt.Println("Loading templates...")
@@ -62,12 +71,11 @@ func main() {
 				// Row segmentation
 				fmt.Println("Rows segmenting...")
 
-				imgArr := GetImgArray(newImg)
 				start, end := SplitLine(imgArr)
 
-				DrawRowSegment(newImg, start, end)
+				DrawRowSegment(img, start, end)
 
-				gocv.IMWrite(outputDir+"03_row_segment.jpg", newImg)
+				gocv.IMWrite(outputDir+"03_row_segment.jpg", img)
 
 				// Open output file
 				output, err := os.Create(outputDir + "text.txt")
@@ -113,8 +121,6 @@ func main() {
 				fmt.Println("DONE!")
 
 			}
-
 		}
 	}
-
 }
