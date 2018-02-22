@@ -78,14 +78,14 @@ func GetSegmentChar(imgArr [][][]uint8) []image.Rectangle {
 					num++
 					grass[y][x] = num
 					maptable[num] = num
-					recttable[num] = image.Rectangle{image.Point{x, y}, image.Point{x, y}}
+					recttable[num] = image.Rectangle{image.Point{x, y}, image.Point{x + 1, y + 1}}
 				} else {
 					// Same object
 					sort.Ints(found)
 
 					rootNode := getMapRoot(maptable, found[0])
 					grass[y][x] = rootNode
-					recttable[rootNode] = updateRect(recttable[rootNode], image.Rectangle{image.Point{x, y}, image.Point{x, y}})
+					recttable[rootNode] = updateRect(recttable[rootNode], image.Rectangle{image.Point{x, y}, image.Point{x + 1, y + 1}})
 
 					// Update maptable and recttable
 					for k := 1; k < len(found); k++ {

@@ -47,10 +47,10 @@ func GetImgArray(img gocv.Mat) [][][]uint8 {
 
 // CropImgArr - Crop image array
 func CropImgArr(imgArr [][][]uint8, bound image.Rectangle) [][][]uint8 {
-	newImg := make([][][]uint8, bound.Max.Y-bound.Min.Y+1)
+	newImg := make([][][]uint8, bound.Max.Y-bound.Min.Y)
 
 	for r := range newImg {
-		newImg[r] = make([][]uint8, bound.Max.X-bound.Min.X+1)
+		newImg[r] = make([][]uint8, bound.Max.X-bound.Min.X)
 
 		for c := range newImg[r] {
 			newImg[r][c] = make([]uint8, 1)

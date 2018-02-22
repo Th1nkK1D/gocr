@@ -9,7 +9,7 @@ import (
 	"gocv.io/x/gocv"
 )
 
-const binSize = 0.8
+const binSize = 1
 const binAmount = 5
 
 // Template structure
