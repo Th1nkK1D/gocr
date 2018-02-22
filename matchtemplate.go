@@ -4,7 +4,6 @@ import (
 	"math"
 	"sort"
 	"strconv"
-	"strings"
 
 	"gocv.io/x/gocv"
 )
@@ -33,12 +32,12 @@ func GetRatioBin(height, width int) int {
 }
 
 // ReadTemplate - read template from file
-func ReadTemplate(templateChar, templateDir string) [][]Template {
+func ReadTemplate(charList []string, templateDir string) [][]Template {
 	// Init templateIndex
 	templateArr := make([][]Template, binAmount)
 
 	// Fetch each character
-	for i, str := range strings.Split(templateChar, " ") {
+	for i, str := range charList {
 		imgArr := GetImgArray(gocv.IMRead(templateDir+strconv.Itoa(i+1)+".png", gocv.IMReadGrayScale))
 		height, width := len(imgArr), len(imgArr[0])
 

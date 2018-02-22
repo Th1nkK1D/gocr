@@ -16,7 +16,6 @@ import (
 	"github.com/golang/freetype/truetype"
 )
 
-const fontFile = "templates/angsanaNew.ttf"
 const fontSize = 80
 
 func getGlypBound(img image.Image) image.Rectangle {
@@ -89,8 +88,18 @@ func writeGlyp(str string, count int, font *truetype.Font) {
 	outFile.Close()
 }
 
+// ReadCharList - Read character list
+func ReadCharList(file string) []string {
+	b, err := ioutil.ReadFile(file) // just pass the file name
+	if err != nil {
+		panic(err)
+	}
+
+	return strings.Split(string(b), " ")
+}
+
 // GenTemplate - Generate Template file
-func GenTemplate(templateChar, templateDir string) {
+func GenTemplate(charList []string, fontFile, templateDir string) {
 	fontBytes, err := ioutil.ReadFile(fontFile)
 
 	if err != nil {
@@ -106,7 +115,7 @@ func GenTemplate(templateChar, templateDir string) {
 	count := 0
 
 	// Each glyps
-	for _, str := range strings.Split(templateChar, " ") {
+	for _, str := range charList {
 		writeGlyp(str, count, font)
 		count++
 	}
