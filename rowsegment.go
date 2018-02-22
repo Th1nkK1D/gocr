@@ -1,11 +1,15 @@
 package main
 
 import (
-	"sort"
+	"image"
+	"image/color"
+
+	"gocv.io/x/gocv"
 )
 
 const cutoffTh = 2
 const countTh = 2
+const mergeTh = 2
 
 func getRowFreq(arr [][][]uint8) []int {
 	freq := make([]int, len(arr))
@@ -29,14 +33,17 @@ func SplitLine(arr [][][]uint8) ([]int, []int) {
 	endMark := make([]int, 0)
 	wCount := 0
 	bCount := 0
+	start := 0
+	end := 0
+	sumSize := 0
+	lineCount := 0
 
 	for r := range arr {
 		if freq[r] >= countTh {
 			// Spot black
 			if wCount > 0 {
-				// fmt.Printf("b -> %v\n", )
 				if wCount >= cutoffTh {
-					startMark = append(startMark, r-cutoffTh)
+					start = r
 				}
 
 				wCount = 0
@@ -48,7 +55,19 @@ func SplitLine(arr [][][]uint8) ([]int, []int) {
 			// Spot white
 			if bCount > 0 {
 				if bCount >= cutoffTh {
-					endMark = append(endMark, r)
+					end = r - 1
+
+					if lineCount > 0 && sumSize/lineCount/(end-start) > mergeTh {
+						// Merge line if size is suspectect
+						endMark[len(endMark)-1] = end
+					} else {
+						// New line
+						startMark = append(startMark, start)
+						endMark = append(endMark, end)
+						sumSize += end - start
+						lineCount++
+					}
+
 				}
 
 				bCount = 0
@@ -58,20 +77,15 @@ func SplitLine(arr [][][]uint8) ([]int, []int) {
 		}
 	}
 
-	// fmt.Printf("%v\n", startMark)
-	// fmt.Printf("%v\n", endMark)
-
-	rangeArr := make([]int, len(startMark))
-
-	for i := range startMark {
-		rangeArr[i] = endMark[i] - startMark[i]
-	}
-
-	// fmt.Printf("value: %v\n", rangeArr)
-
-	sort.Ints(rangeArr)
-
-	// fmt.Printf("value: %v\n", rangeArr)
-
 	return startMark, endMark
+}
+
+// DrawRowSegment - draw line segment on mat
+func DrawRowSegment(img gocv.Mat, start, end []int) {
+	width := img.Cols()
+
+	for i := range start {
+		gocv.Line(img, image.Point{0, start[i]}, image.Point{width, start[i]}, color.RGBA{0, 0, 0, 255}, 1)
+		gocv.Line(img, image.Point{0, end[i]}, image.Point{width, end[i]}, color.RGBA{0, 0, 0, 255}, 2)
+	}
 }
