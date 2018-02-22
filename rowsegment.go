@@ -9,7 +9,7 @@ import (
 
 const cutoffTh = 2
 const countTh = 2
-const mergeTh = 2
+const mergeTh = 4
 
 func getRowFreq(arr [][][]uint8) []int {
 	freq := make([]int, len(arr))
@@ -35,7 +35,8 @@ func SplitLine(arr [][][]uint8) ([]int, []int) {
 	bCount := 0
 	start := 0
 	end := 0
-	sumSize := 0
+	sumText := 0
+	sumSpace := 0
 	lineCount := 0
 
 	for r := range arr {
@@ -57,16 +58,15 @@ func SplitLine(arr [][][]uint8) ([]int, []int) {
 				if bCount >= cutoffTh {
 					end = r - 1
 
-					if lineCount > 0 && sumSize/lineCount/(end-start) > mergeTh {
-						// Merge line if size is suspectect
-						endMark[len(endMark)-1] = end
-					} else {
-						// New line
-						startMark = append(startMark, start)
-						endMark = append(endMark, end)
-						sumSize += end - start
-						lineCount++
+					if len(endMark) > 0 {
+						sumSpace += start - endMark[len(endMark)-1]
 					}
+
+					startMark = append(startMark, start)
+					endMark = append(endMark, end)
+
+					lineCount++
+					sumText += end - start
 
 				}
 
@@ -74,6 +74,29 @@ func SplitLine(arr [][][]uint8) ([]int, []int) {
 			}
 
 			wCount++
+		}
+	}
+
+	if lineCount > 0 {
+		// Need to merge check
+		avgSpace := sumSpace / (lineCount - 1)
+		avgText := sumText / lineCount
+
+		if avgText/avgSpace > mergeTh {
+			// Merge to single line
+			startMark = startMark[:1]
+			endMark = endMark[len(endMark)-1:]
+		} else {
+			// Merge to multiple line
+			for i := len(startMark) - 1; i > 0; i-- {
+				if startMark[i]-endMark[i-1] < avgSpace {
+					// Merge line
+					endMark[i-1] = endMark[i]
+
+					startMark = startMark[:i+copy(startMark[i:], startMark[i+1:])]
+					endMark = endMark[:i+copy(endMark[i:], endMark[i+1:])]
+				}
+			}
 		}
 	}
 

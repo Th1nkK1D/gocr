@@ -7,9 +7,9 @@ import (
 	"gocv.io/x/gocv"
 )
 
-const imgPath = "image3.png"
+const imgPath = "image5.png"
 
-const templateChar = "ล ู ก ค ิ ด ม า เ ล ้ ว อ ฟ ห ่ ไ โ บ"
+const templateChar = "ล ู ก ค ิ ด ม า เ ล ้ ว อ ฟ ห ่ ไ โ บ ซ บ"
 const templateDir = "templates/"
 
 func main() {
@@ -31,36 +31,35 @@ func main() {
 		imgArr := GetImgArray(newImg)
 
 		// Read template
-		// templates := ReadTemplate(templateChar, templateDir)
+		templates := ReadTemplate(templateChar, templateDir)
 
 		// Row segmentation
 		start, end := SplitLine(imgArr)
 		fmt.Printf("%v\n", start)
 		fmt.Printf("%v\n", end)
 
-		DrawRowSegment(newImg, start, end)
+		// DrawRowSegment(newImg, start, end)
 
 		gocv.IMWrite("out.jpg", newImg)
 
-		// for i := range start {
-		// 	Show(GetImgMat(imgArr[start[i]:end[i]]))
-		// }
+		for i := range start {
+			// Character segmentation
+			rectTable := GetSegmentChar(imgArr[start[i]:end[i]])
 
-		// for i := range start {
-		// Character segmentation
-		// rectTable := GetSegmentChar(imgArr) //[start[0]:end[0]]
+			// testImg := GetImgMat(imgArr[start[i]:end[i]])
 
-		// for b := range rectTable {
-		// 	cropImg := CropImgArr(imgArr, rectTable[b])
+			for b := range rectTable {
+				// gocv.Rectangle(testImg, rectTable[b], color.RGBA{255, 0, 0, 0}, 1)
 
-		// 	fmt.Printf("%v", MatchTemplate(cropImg, templates[GetRatioBin(len(cropImg), len(cropImg[b]))])[0].char)
-		// }
+				cropImg := CropImgArr(imgArr[start[i]:end[i]], rectTable[b])
 
-		// }
+				fmt.Printf("%v", MatchTemplate(cropImg, templates[GetRatioBin(len(cropImg), len(cropImg[b]))])[0].char)
+			}
 
-		// for i := range rectTable {
-		// 	gocv.Rectangle(newImg, rectTable[i], color.RGBA{255, 0, 0, 0}, 1)
-		// }
+			// gocv.IMWrite("out.jpg", testImg)
 
+			println()
+
+		}
 	}
 }
