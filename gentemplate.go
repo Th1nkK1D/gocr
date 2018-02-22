@@ -17,7 +17,7 @@ import (
 )
 
 const fontFile = "templates/angsanaNew.ttf"
-const fontSize = 40
+const fontSize = 80
 
 func getGlypBound(img image.Image) image.Rectangle {
 	white := color.RGBA{255, 255, 255, 255}

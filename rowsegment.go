@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"sort"
 )
 
@@ -59,8 +58,8 @@ func SplitLine(arr [][][]uint8) ([]int, []int) {
 		}
 	}
 
-	fmt.Printf("%v\n", startMark)
-	fmt.Printf("%v\n", endMark)
+	// fmt.Printf("%v\n", startMark)
+	// fmt.Printf("%v\n", endMark)
 
 	rangeArr := make([]int, len(startMark))
 
@@ -68,11 +67,11 @@ func SplitLine(arr [][][]uint8) ([]int, []int) {
 		rangeArr[i] = endMark[i] - startMark[i]
 	}
 
-	fmt.Printf("value: %v\n", rangeArr)
+	// fmt.Printf("value: %v\n", rangeArr)
 
 	sort.Ints(rangeArr)
 
-	fmt.Printf("value: %v\n", rangeArr)
+	// fmt.Printf("value: %v\n", rangeArr)
 
 	return startMark, endMark
 }
