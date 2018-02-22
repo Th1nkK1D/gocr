@@ -3,65 +3,84 @@ package main
 import (
 	"fmt"
 	"image"
+	"image/color"
 	"os"
+	"strconv"
 
 	"gocv.io/x/gocv"
 )
 
-const imgPath = "image6.png"
-
 const templateChar = "ล ู ก ค ิ ด ม า เ ล ้ ว อ ฟ ห ่ ไ โ บ ซ บ ใ จ"
 const templateDir = "templates/"
+const outputDir = "outputs/"
 
 func main() {
-	if len(os.Args) > 1 && os.Args[1] == "--gentemp" {
-		// Generate template
-		GenTemplate(templateChar, templateDir)
+	if len(os.Args) == 1 {
+		fmt.Println("Invalid argument: gocr [mode, filename]")
 	} else {
-		// OCR
+		if os.Args[1] == "--gentemp" {
+			// Generate template
+			GenTemplate(templateChar, templateDir)
+		} else {
+			// OCR
 
-		// Read image
-		img := gocv.IMRead(imgPath, gocv.IMReadGrayScale)
+			// Read image
+			fmt.Printf("Opening %v...\n", os.Args[1])
 
-		// Apply auto threshold
-		newImg := AutoThreshold(img)
+			img := gocv.IMRead(os.Args[1], gocv.IMReadGrayScale)
 
-		// Show(newImg)
+			// Apply auto threshold
+			fmt.Println("Applying auto threshold...")
 
-		// Get image array
-		imgArr := GetImgArray(newImg)
+			newImg := AutoThreshold(img)
 
-		// Read template
-		templates := ReadTemplate(templateChar, templateDir)
+			gocv.IMWrite(outputDir+"02_auto_threshold.jpg", newImg)
 
-		// Row segmentation
-		start, end := SplitLine(imgArr)
-		// fmt.Printf("%v\n", start)
-		// fmt.Printf("%v\n", end)
+			// Read template
+			fmt.Println("Loading templates...")
 
-		// DrawRowSegment(newImg, start, end)
+			templates := ReadTemplate(templateChar, templateDir)
 
-		for i := range start {
+			// Row segmentation
+			fmt.Println("Rows segmenting...")
+
+			imgArr := GetImgArray(newImg)
+			start, end := SplitLine(imgArr)
+
+			DrawRowSegment(newImg, start, end)
+
+			gocv.IMWrite(outputDir+"03_row_segment.jpg", newImg)
+
 			// Character segmentation
-			row := CropImgArr(imgArr, image.Rectangle{image.Point{0, start[i]}, image.Point{len(imgArr[0]), end[i]}})
-			rectTable := GetSegmentChar(row)
+			fmt.Println("Characters segmenting and template mathching...")
+			fmt.Println(">>")
 
-			// testImg := GetImgMat(row)
+			for i := range start {
+				row := CropImgArr(imgArr, image.Rectangle{image.Point{0, start[i]}, image.Point{len(imgArr[0]), end[i]}})
+				rectTable := GetSegmentChar(row)
 
-			for b := range rectTable {
-				// fmt.Println(rectTable[b])
-				// gocv.Rectangle(testImg, rectTable[b], color.RGBA{255, 0, 0, 0}, 1)
+				rowImg := GetImgMat(row)
 
-				cropImg := CropImgArr(row, rectTable[b])
+				for _, rect := range rectTable {
+					gocv.Rectangle(rowImg, rect, color.RGBA{255, 0, 0, 0}, 1)
+				}
 
-				// gocv.IMWrite("out"+strconv.Itoa(b)+".jpg", GetImgMat(cropImg))
+				gocv.IMWrite(outputDir+"04_character_segment_"+strconv.Itoa(i)+".jpg", rowImg)
 
-				fmt.Printf("%v", MatchTemplate(cropImg, templates[GetRatioBin(len(cropImg), len(cropImg[b]))])[0].char)
+				for b := range rectTable {
+					cropImg := CropImgArr(row, rectTable[b])
+
+					fmt.Printf("%v", MatchTemplate(cropImg, templates[GetRatioBin(len(cropImg), len(cropImg[b]))])[0].char)
+				}
+
+				println()
 			}
-			// gocv.IMWrite("out.jpg", testImg)
 
-			println()
+			fmt.Println("<<")
+
+			fmt.Println("DONE!")
+
 		}
-
 	}
+
 }
