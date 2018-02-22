@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"image"
 	"image/color"
@@ -13,6 +14,12 @@ import (
 const templateChar = "ล ู ก ค ิ ด ม า เ ล ้ ว อ ฟ ห ่ ไ โ บ ซ บ ใ จ"
 const templateDir = "templates/"
 const outputDir = "outputs/"
+
+func check(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
 
 func main() {
 	if len(os.Args) == 1 {
@@ -51,6 +58,11 @@ func main() {
 
 			gocv.IMWrite(outputDir+"03_row_segment.jpg", newImg)
 
+			// Open output file
+			output, err := os.Create(outputDir + "text.txt")
+			check(err)
+			writer := bufio.NewWriter(output)
+
 			// Character segmentation
 			fmt.Println("Characters segmenting and template mathching...")
 			fmt.Println(">>")
@@ -69,14 +81,23 @@ func main() {
 
 				for b := range rectTable {
 					cropImg := CropImgArr(row, rectTable[b])
+					res := MatchTemplate(cropImg, templates[GetRatioBin(len(cropImg), len(cropImg[b]))])
 
-					fmt.Printf("%v", MatchTemplate(cropImg, templates[GetRatioBin(len(cropImg), len(cropImg[b]))])[0].char)
+					fmt.Printf("%v", res[0].char)
+					_, err = fmt.Fprintf(writer, "%v", res[0].char)
+					check(err)
 				}
 
 				println()
+				_, err = fmt.Fprintf(writer, "\n")
+				check(err)
 			}
 
 			fmt.Println("<<")
+
+			// Flush buffer and close file
+			writer.Flush()
+			output.Close()
 
 			fmt.Println("DONE!")
 
