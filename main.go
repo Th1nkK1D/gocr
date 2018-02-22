@@ -1,11 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"os"
+
+	"gocv.io/x/gocv"
 )
 
-const imgPath = "image3.png"
+const imgPath = "templates/1.png"
 
 const templateChar = "ฟ ห ก ด เ ้ ่ า ส ว ง ๆ ไ พ ั ี ร น ย บ ล"
 const templateDir = "templates/"
@@ -17,13 +18,13 @@ func main() {
 	} else {
 		// OCR
 
-		// img := gocv.IMRead(imgPath, gocv.IMReadGrayScale)
+		img := gocv.IMRead(imgPath, gocv.IMReadGrayScale)
 
-		// newImg := AutoThreshold(img)
+		newImg := AutoThreshold(img)
 
-		// Show(newImg)
+		Show(newImg)
 
-		// imgArr := GetImgArray(newImg)
+		imgArr := GetImgArray(newImg)
 
 		// start, end := SplitLine(imgArr)
 
@@ -41,9 +42,13 @@ func main() {
 
 		// gocv.IMWrite("out.jpg", newImg)
 
-		templates := ReadTemplate(templateChar, templateDir)
+		// templates := ReadTemplate(templateChar, templateDir)
 
-		fmt.Println(templates)
+		// fmt.Println(templates)
+
+		// test := [][][]uint8{{{1}, {2}, {1}, {1}, {2}, {1}}, {{2}, {3}, {2}, {2}, {3}, {2}}, {{1}, {2}, {1}, {1}, {2}, {1}}}
+
+		Show(GetImgMat(Resize(imgArr, len(imgArr)/2, len(imgArr[0])/2)))
 
 	}
 }
