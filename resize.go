@@ -1,9 +1,31 @@
 package main
 
+// Greatest common divisor
+func gcd(a, b int) int {
+	if b == 0 {
+		return a
+	}
+	return gcd(b, a%b)
+}
+
+// Least common factor
+func lcf(a, b int) int {
+	if a < b {
+		a, b = b, a
+	}
+
+	return a * b / gcd(a, b)
+}
+
 // Resize - resize the image
 func Resize(imgArr [][][]uint8, height, width int) [][][]uint8 {
-	oldHeight := len(imgArr)
-	oldWidth := len(imgArr[0])
+	lcfHeight := lcf(height, len(imgArr))
+	lcfWidth := lcf(width, len(imgArr[0]))
+
+	newHeightFrac := lcfHeight / height
+	oldHeightFrac := lcfHeight / len(imgArr)
+	newWidthFrac := lcfWidth / width
+	oldWidthFrac := lcfWidth / len(imgArr[0])
 
 	// Init newImage
 	newImg := make([][][]uint8, height)
@@ -16,16 +38,18 @@ func Resize(imgArr [][][]uint8, height, width int) [][][]uint8 {
 
 			sum := 0
 
-			for j := r * oldHeight; j < oldHeight*(r+1); j++ {
-				yIndex := j / height
+			// Sampling
+			for j := r * newHeightFrac; j < newHeightFrac*(r+1); j++ {
+				yIndex := j / oldHeightFrac
 
-				for i := c * oldWidth; i < oldWidth*(c+1); i++ {
-					xIndex := i / width
+				for i := c * newWidthFrac; i < newWidthFrac*(c+1); i++ {
+					xIndex := i / oldWidthFrac
 
 					sum += int(imgArr[yIndex][xIndex][0])
 				}
 			}
-			newImg[r][c][0] = uint8((float64(sum))/float64(oldHeight*oldWidth) + 0.5)
+
+			newImg[r][c][0] = uint8((float64(sum))/float64(newHeightFrac*newWidthFrac) + 0.5)
 		}
 	}
 
