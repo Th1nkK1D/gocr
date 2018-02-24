@@ -20,7 +20,7 @@ This project is mainly focus on Thai language and test with some Thai characters
 gocr --gentemp <charlist.txt> <fontfile.ttf>
 ```
 
-The templates of character list in `charlist.txt` with `fontfile.ttf` font will be generate in `/templates` directory
+The templates of character list in `charlist.txt` with `fontfile.ttf` fontface will be generated in `/templates` directory
 
 ### OCR
 ``` bash
@@ -30,23 +30,23 @@ gocr <charlist.txt> <inputImage>
 The `inputImage` and `charlist.txt` (the same one that use to generate templates) will be use for OCR. The output text file and images of each process will be saved in `/outputs` directory.
 
 ## Example
-**Input image**
+#### Input image
 ![](https://i.imgur.com/65TqcDN.jpg)
 
-**Median filter + automatic thresholding**
+#### Median filter + automatic thresholding
 ![](https://i.imgur.com/MwzFKSH.jpg)
 
-**Rows segmentation**
+#### Rows segmentation
 ![](https://i.imgur.com/fezTbXX.jpg)
 
-**Characters segmentation**
+#### Characters segmentation
 ![](https://i.imgur.com/OXrEq5K.jpg)
 ![](https://i.imgur.com/4usYCcs.jpg)
 ![](https://i.imgur.com/glv0ziG.jpg)
 ![](https://i.imgur.com/e4bA7Z2.jpg)
 ![](https://i.imgur.com/JzwL18K.jpg)
 
-**Text output:**
+#### Text output
 ```
 234sohappy
 sawasdeewansao
@@ -56,10 +56,10 @@ sawasdeewansao
 ```
 You can notice some incorect character recognition here
 
-**Terminal output:**
+#### Terminal output
 ![](https://i.imgur.com/8t6ndrs.png)
 
-## Test case
+## Test cases
 No. | Font | Capture Method | Correctness
 --- | --- | --- | ---
 1 | Same as template | Screen capture | 58/58
@@ -69,10 +69,10 @@ No. | Font | Capture Method | Correctness
 5 | Different font | Phone camera | 34/58
 
 ## What should be improve
-- Support multi-object character (ex. ะ, ​ญ)
+- Support multi-object character (ex. ะ, ญ)
 - Better similar character (recognition Dictionary? Machine Learning? Character type consideration?)
 - A space in between word recognition
-- Handle system error (ex. can't openfile)
+- Handle system error (ex. can't open file)
 
 ## Main Resources
 - [Golang](https://golang.org) : an open source programming language 
