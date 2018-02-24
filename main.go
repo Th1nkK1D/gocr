@@ -98,13 +98,24 @@ func main() {
 
 					gocv.IMWrite(outputDir+"04_character_segment_"+strconv.Itoa(i)+".jpg", rowImg)
 
+					// Template Matching
 					for b := range rectTable {
 						cropImg := CropImgArr(row, rectTable[b])
-						res := MatchTemplate(cropImg, templates[GetRatioBin(len(cropImg), len(cropImg[b]))])
+						ratioBin := GetRatioBin(len(cropImg), len(cropImg[b]))
 
-						fmt.Printf("%v", res[0].char)
-						_, err = fmt.Fprintf(writer, "%v", res[0].char)
-						check(err)
+						if ratioBin >= 0 && ratioBin < len(templates) {
+							// Valid object
+							res := MatchTemplate(cropImg, templates[ratioBin])
+
+							fmt.Printf("%v", res[0].char)
+							_, err = fmt.Fprintf(writer, "%v", res[0].char)
+							check(err)
+						} else {
+							// Invalid object
+							fmt.Printf("?")
+							_, err = fmt.Fprintf(writer, "?")
+							check(err)
+						}
 					}
 
 					println()
