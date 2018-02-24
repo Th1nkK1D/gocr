@@ -1,4 +1,4 @@
 *.jpg
 *.png
+*.ttf
 gocr
-/outputs/*
