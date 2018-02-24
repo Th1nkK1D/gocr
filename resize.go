@@ -1,3 +1,5 @@
+// gOCR - Resizer Module
+
 package main
 
 // Greatest common divisor

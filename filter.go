@@ -1,3 +1,5 @@
+// gOCR - Median Filter Module
+
 package main
 
 import (

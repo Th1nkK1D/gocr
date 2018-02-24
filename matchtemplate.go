@@ -1,3 +1,5 @@
+// gOCR - Template Matching Module
+
 package main
 
 import (
@@ -44,8 +46,6 @@ func ReadTemplate(charList []string, templateDir string) [][]Template {
 		temp := Template{str, imgArr, height, width}
 		bin := GetRatioBin(height, width)
 
-		// fmt.Printf("%v -> %v x %v (%v)\n", str, height, width, bin)
-
 		templateArr[bin] = append(templateArr[bin], temp)
 	}
 
@@ -57,15 +57,12 @@ func MatchTemplate(blob [][][]uint8, templates []Template) []MatchRes {
 	resArr := make([]MatchRes, 0)
 
 	for t := range templates {
-		// fmt.Printf("%v -> %v x %v\n", templates[t].char, templates[t].height, templates[t].width)
 
-		// comp := Resize(blob, templates[t].height, templates[t].width)
 		comp := Resize(templates[t].arr, len(blob), len(blob[0]))
 		sse := 0
 
 		for r := range comp {
 			for c := range comp[r] {
-				// sse += int(math.Pow(float64(comp[r][c][0]-templates[t].arr[r][c][0]), 2))
 				sse += int(math.Pow(float64(comp[r][c][0]-blob[r][c][0]), 2))
 			}
 		}
@@ -74,9 +71,6 @@ func MatchTemplate(blob [][][]uint8, templates []Template) []MatchRes {
 	}
 
 	sort.Slice(resArr, func(i, j int) bool { return resArr[i].sse < resArr[j].sse })
-
-	// gocv.IMWrite("resized.png", GetImgMat(Resize(blob, templates[resArr[0].i].height, templates[resArr[0].i].width)))
-	// gocv.IMWrite("matchtemp.png", GetImgMat(templates[resArr[0].i].arr))
 
 	return resArr
 }

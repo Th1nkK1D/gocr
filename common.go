@@ -1,3 +1,5 @@
+// gOCR - Common Module
+
 package main
 
 import (

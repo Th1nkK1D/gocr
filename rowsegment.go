@@ -1,3 +1,5 @@
+// gOCR - Row Segmentation Module
+
 package main
 
 import (

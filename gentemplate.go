@@ -1,3 +1,5 @@
+// gOCR - Template Generation Module
+
 package main
 
 import (

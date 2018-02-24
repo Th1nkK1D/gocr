@@ -1,3 +1,5 @@
+// gOCR - Automatic Thresholding Module
+
 package main
 
 import (

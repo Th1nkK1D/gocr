@@ -1,3 +1,5 @@
+// gOCR - Blob Coloring Module
+
 package main
 
 import (
@@ -52,8 +54,6 @@ func GetSegmentChar(imgArr [][][]uint8) []image.Rectangle {
 			}
 		}
 	}
-
-	// fmt.Printf("%v\n", grass)
 
 	// Start a fire
 	for y := range grass {
